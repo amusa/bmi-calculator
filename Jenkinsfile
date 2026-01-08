@@ -1,5 +1,18 @@
 pipeline {
-    agent any
+    // agent any
+    // agent {
+    //     docker {
+    //         // image 'node:25-alpine'   
+    //         image 'node:16.13.1-alpine'
+    //     }
+    // }
+
+    agent { 
+        dockerfile { 
+            filename 'Dockerfile.build' 
+            args '-v /root/.npm:/.npm' 
+        } 
+    }
     
     
     stages {        
@@ -22,12 +35,12 @@ pipeline {
         }
         
         stage("CI Stage"){  
-            agent {
-                docker {
-                   // image 'node:25-alpine'   
-                   image 'node:16.13.1-alpine'
-                }
-            }          
+            // agent {
+            //     docker {
+            //        // image 'node:25-alpine'   
+            //        image 'node:16.13.1-alpine'
+            //     }
+            // }          
             steps {
                               
                 sh 'node --version'   
@@ -53,12 +66,12 @@ pipeline {
             }
         }
         stage('Build'){
-            agent {
-                docker {
-                   // image 'node:25-alpine'   
-                   image 'node:16.13.1-alpine'
-                }
-            }
+            // agent {
+            //     docker {
+            //        // image 'node:25-alpine'   
+            //        image 'node:16.13.1-alpine'
+            //     }
+            // }
             steps{
                 sh 'npm run build'
                 zip archive: true, dir: 'build', glob: '', zipFile: 'build.zip'
