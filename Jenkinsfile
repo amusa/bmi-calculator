@@ -60,11 +60,9 @@ pipeline {
             }
         }
         stage('Docker Image') {
-            agent { 
-                dockerfile { 
-                    filename 'Dockerfile.build' 
-                    args '-v /root/.npm:/.npm' 
-                 } 
+            docker {
+                image 'docker:27-dind'
+                args '--privileged'
             }
             steps { 
                 unstash 'build' 
