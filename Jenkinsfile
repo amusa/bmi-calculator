@@ -63,7 +63,8 @@ pipeline {
             agent{
                 docker {
                     image 'docker:27-dind'
-                    args '--privileged'
+                    // args '--privileged'
+                    args '-u root'
                 }
             }
             steps { 
