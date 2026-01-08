@@ -1,5 +1,11 @@
 pipeline {
-    agent any
+    //agent any
+    agent {
+                docker {
+                   // image 'node:25-alpine'   
+                   image 'node:16.13.1-alpine'
+                }
+            }
     
     stages {        
         stage('SonarQube Analysis') {
@@ -20,13 +26,7 @@ pipeline {
             }
         }
         
-        stage("CI Stage"){
-            agent {
-                docker {
-                   // image 'node:25-alpine'   
-                   image 'node:16.13.1-alpine'
-                }
-            }
+        stage("CI Stage"){            
             steps {
                
                 sh 'npm ci'
