@@ -29,10 +29,10 @@ pipeline {
                 }
             }          
             steps {
-               
-                sh 'npm ci'
+                              
                 sh 'node --version'   
-                        
+                sh 'rm -f build.zip; rm -rf build'   
+                sh 'npm ci'
                 
                 // 2. Execute unit tests and calculate code coverage
                 sh 'npm run test -- --coverage --watchAll=false'
@@ -44,10 +44,6 @@ pipeline {
                 //     failUnhealthy: true
                 // )
 
-                // recordCoverage(
-                //     tools: [[parser: 'COBERTURA', pattern: '**/coverage/cobertura-coverage.xml']],
-                //     qualityGates: [[threshold: 40.0, metric: 'LINE', baseline: 'PROJECT', unstable: true]]
-                // )
                 sh 'ls -r coverage'
                 
                 recordCoverage(
@@ -70,7 +66,16 @@ pipeline {
                 stash(includes: 'build.zip', name: 'build')
             }
         }
-    
+        stage('Docker Image') {
+            steps { 
+                unstash 'build' 
+                unzip dir: 'build', glob: '', zipFile: 'build.zip' 
+                sh 'docker build -f Dockerfile -t ayemi/bmi-calc:1.0 . && docker images' 
+                withDockerRegistry([ credentialsId: "dockerhub-cred", url: "" ]) { 
+                    sh 'docker push ayemi/bmi-calc:1.0' 
+                }
+            } 
+        }
     
         
     }
