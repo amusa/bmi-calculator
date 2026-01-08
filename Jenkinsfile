@@ -67,7 +67,7 @@ pipeline {
                     // args '-u root'
                     image 'docker:27.4.1-cli' // Use a client-only image
                     // Bind the host socket to the container socket
-                    args '-v /var/run/docker.sock:/var/run/docker.sock'
+                    args '-v /var/run/docker.sock:/var/run/docker.sock -u ${UID}:${GID}'
                 }
             }
             steps { 
