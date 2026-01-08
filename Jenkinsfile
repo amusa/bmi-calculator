@@ -60,9 +60,11 @@ pipeline {
             }
         }
         stage('Docker Image') {
-            docker {
-                image 'docker:27-dind'
-                args '--privileged'
+            agent{
+                docker {
+                    image 'docker:27-dind'
+                    args '--privileged'
+                }
             }
             steps { 
                 unstash 'build' 
