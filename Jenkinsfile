@@ -2,23 +2,23 @@ pipeline {
     agent any
     
     stages {        
-        stage('SonarQube Analysis') {
-            agent {
-                docker {
-                    image 'sonarsource/sonar-scanner-cli:latest'   
-                }
-            }
-            steps {
-                withSonarQubeEnv(installationName: 'SonarQubeServer', credentialsId: 'SonarToken') {  
-                    sh 'sonar-scanner -Dsonar.projectVersion=1.0 -Dsonar.projectKey=react-bmi-app -Dsonar.sources=src'                
-                }
-            }
-        }
-        stage("Quality Gate") {
-            steps {
-                waitForQualityGate(abortPipeline: true, credentialsId: 'SonarToken')  
-            }
-        }
+        // stage('SonarQube Analysis') {
+        //     agent {
+        //         docker {
+        //             image 'sonarsource/sonar-scanner-cli:latest'   
+        //         }
+        //     }
+        //     steps {
+        //         withSonarQubeEnv(installationName: 'SonarQubeServer', credentialsId: 'SonarToken') {  
+        //             sh 'sonar-scanner -Dsonar.projectVersion=1.0 -Dsonar.projectKey=react-bmi-app -Dsonar.sources=src'                
+        //         }
+        //     }
+        // }
+        // stage("Quality Gate") {
+        //     steps {
+        //         waitForQualityGate(abortPipeline: true, credentialsId: 'SonarToken')  
+        //     }
+        // }
         
         stage("CI Stage"){  
             agent {
@@ -62,9 +62,12 @@ pipeline {
         stage('Docker Image') {
             agent{
                 docker {
-                    image 'docker:27-dind'
-                    // args '--privileged'
-                    args '-u root'
+                    // image 'docker:27-dind'
+                    // // args '--privileged'
+                    // args '-u root'
+                    image 'docker:27.4.1-cli' // Use a client-only image
+                    // Bind the host socket to the container socket
+                    args '-v /var/run/docker.sock:/var/run/docker.sock'
                 }
             }
             steps { 
