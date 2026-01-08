@@ -44,18 +44,12 @@ pipeline {
             steps {
                               
                 sh 'node --version'   
+                sh 'ls -la'
                 sh 'rm -f build.zip; rm -rf build'   
-                sh 'npm ci'
+                sh 'ls -la'
+                sh 'npm ci --cache .npm'
                 
-                // 2. Execute unit tests and calculate code coverage
                 sh 'npm run test -- --coverage --watchAll=false'
-                
-                // 3. Configure Cobertura plugin with 40% minimum Line Coverage
-                // cobertura(
-                //     coberturaReportFile: '**/coverage/cobertura-coverage.xml',
-                //     lineCoverageTargets: '40',
-                //     failUnhealthy: true
-                // )
 
                 sh 'ls -r coverage'
                 
@@ -66,12 +60,6 @@ pipeline {
             }
         }
         stage('Build'){
-            // agent {
-            //     docker {
-            //        // image 'node:25-alpine'   
-            //        image 'node:16.13.1-alpine'
-            //     }
-            // }
             steps{
                 sh 'npm run build'
                 zip archive: true, dir: 'build', glob: '', zipFile: 'build.zip'
