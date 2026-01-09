@@ -1,33 +1,9 @@
 
  pipeline { 
- 	agent any  
+ 	agent any 
  
  	stages { 
-		stage('SonarQube Analysis') {
-      agent {
-        docker {
-          image 'sonarsource/sonar-scanner-cli:latest'   
-        }
-      }
-			stages{
-				stage('Scan'){
-					steps {
-						withSonarQubeEnv(installationName: 'SonarQubeServer', credentialsId: 'SonarToken') {  
-							sh 'sonar-scanner -Dsonar.projectVersion=1.0 -Dsonar.projectKey=react-bmi-app -Dsonar.sources=src'                
-						}
-      		}
-				}
-				stage("Quality Gate") {
-					steps {
-						waitForQualityGate(abortPipeline: true, credentialsId: 'SonarToken')  
-					}
-    		}
-
-			}
-      
-    }
-    
-  	stage('CI') { 
+ 		stage('CI') { 
  			agent { 
  				dockerfile { 
  					filename 'Dockerfile.build' 
@@ -65,18 +41,5 @@
 				} 
 			} 
 		} 
-		stage('Trivy Image Scan'){
-			agent {
-				dockerfile {
-					filename 'Dockerfile.docker'
-					args '--entrypoint='
-				}
-			}
-			steps {
-				sh "trivy help && trivy --cache-dir /tmp/trivy/ image -f json -o results.json 'ayemi/bmi-calc:1.0'"
-				recordIssues(tools: [trivy(pattern: 'results.json')])
-			}
-		}
-	}
-	
+	} 
 }
