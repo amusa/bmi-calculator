@@ -1,46 +1,69 @@
 
  pipeline { 
- agent any 
+ 	agent any  
  
- stages { 
- stage('CI') { 
- agent { 
- dockerfile { 
- filename 'Dockerfile.build' 
- args '-v /root/.npm:/.npm' 
- } 
- } 
- stages { 
- stage('NPM') { 
- steps { 
- sh 'ls -a; node --version' 
- sh 'rm -f build.zip; rm -rf build' 
- sh 'npm ci --cache .npm' 
- } 
- } 
- stage('Build') { 
- steps { 
- sh 'npm run build' 
- zip archive: true, dir: 'build', glob: '', zipFile: 'build.zip' 
- archiveArtifacts artifacts: 'build.zip', followSymlinks: false 
- stash(includes: 'build.zip', name: 'build') 
- } 
- } 
- 
- } 
- 
- } 
- stage('Docker Image') {
+ 	stages { 
+		stage('SonarQube Analysis') {
+      agent {
+        docker {
+          image 'sonarsource/sonar-scanner-cli:latest'   
+        }
+      }
+			stages{
+				stage('Scan'){
+					steps {
+						withSonarQubeEnv(installationName: 'SonarQubeServer', credentialsId: 'SonarToken') {  
+							sh 'sonar-scanner -Dsonar.projectVersion=1.0 -Dsonar.projectKey=react-bmi-app -Dsonar.sources=src'                
+						}
+      		}
+				}
+				stage("Quality Gate") {
+					steps {
+						waitForQualityGate(abortPipeline: true, credentialsId: 'SonarToken')  
+					}
+    		}
 
- steps { 
- unstash 'build' 
- unzip dir: 'build', glob: '', zipFile: 'build.zip' 
- sh 'docker build -f Dockerfile -t ayemi/bmi-calc:1.0 . && docker images' 
+			}
+      
+    }
+    
+  	stage('CI') { 
+ 			agent { 
+ 				dockerfile { 
+ 					filename 'Dockerfile.build' 
+ 					args '-v /root/.npm:/.npm' 
+ 				} 
+ 			} 
  
- withDockerRegistry([ credentialsId: "dockerhub-cred", url: "" ]) { 
- sh 'docker push ayemi/bmi-calc:1.0' 
- } 
- } 
- } 
- } 
- }
+			stages { 
+				stage('NPM') { 
+					steps { 
+						sh 'ls -a; node --version' 
+						sh 'rm -f build.zip; rm -rf build' 
+						sh 'npm ci --cache .npm' 
+					} 
+ 				} 
+ 				stage('Build') { 
+					steps { 
+						sh 'npm run build' 
+						zip archive: true, dir: 'build', glob: '', zipFile: 'build.zip' 
+						archiveArtifacts artifacts: 'build.zip', followSymlinks: false 
+						stash(includes: 'build.zip', name: 'build') 
+ 					} 
+ 				} 
+ 
+ 			} 
+ 		} 
+ 		stage('Docker Image') {
+			steps { 
+				unstash 'build' 
+				unzip dir: 'build', glob: '', zipFile: 'build.zip' 
+				sh 'docker build -f Dockerfile -t ayemi/bmi-calc:1.0 . && docker images' 
+			
+				withDockerRegistry([ credentialsId: "dockerhub-cred", url: "" ]) { 
+					sh 'docker push ayemi/bmi-calc:1.0' 
+				} 
+			} 
+		} 
+	} 
+}
