@@ -77,6 +77,15 @@
 				recordIssues(tools: [trivy(pattern: 'results.json')])
 			}
 		}
+		stage('Minikube Deployment'){
+			agent{
+				label 'kubernetes'
+			}
+			steps{
+				sh 'kubectl apply -f react-deployment.yaml'
+			}
+		}
+		
 	}
 	
 }

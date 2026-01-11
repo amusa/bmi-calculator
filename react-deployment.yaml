@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reactapp-deployment
+  namespace: jenkins
+  labels:
+    app: reactapp
+    type: front-end
+spec:
+  template:
+    metadata:
+      name: reactapp-pod
+      labels:
+        app: reactapp
+    spec:
+      containers:
+        - name: react-app-bmi
+          image: ayemi/bmi-calc:1.0
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: reactapp
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: reactapp-service
+  namespace: jenkins
+  labels:
+    app: reactapp
+    type: front-end
+spec:
+  selector:
+    app: reactapp
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer
+  externalIPs:
+    - 192.168.49.2
