@@ -5,9 +5,12 @@
  	stages { 
 		stage('SonarQube Analysis') {
       agent {
-        docker {
-          image 'sonarsource/sonar-scanner-cli:latest'   
-        }
+        // docker {
+        //   image 'sonarsource/sonar-scanner-cli:latest'   
+        // }
+		dockerfile{
+			filename 'Dockerfile.sonar'
+		}
       }
 			stages{
 				stage('Scan'){
