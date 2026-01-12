@@ -4,22 +4,22 @@
  
  	stages { 
 		stage('SonarQube Analysis') {
-    //   agent {
+      agent {
         // docker {
         //   image 'sonarsource/sonar-scanner-cli:latest'   
         // }
-		// dockerfile{
-		// 	filename 'Dockerfile.sonar'
-		// }
-    //   }
+		dockerfile{
+			filename 'Dockerfile.sonar'
+		}
+      }
 			stages{
 				stage('Scan'){
 					steps {
-						container('sonar'){
+						// container('sonar'){
 							withSonarQubeEnv(installationName: 'SonarQubeServer', credentialsId: 'SonarToken') {  
 								sh 'sonar-scanner -Dsonar.projectVersion=1.0 -Dsonar.projectKey=react-bmi-app -Dsonar.sources=src'                
 							}
-						}
+						// }
       				}
 				}
 				stage("Quality Gate") {
