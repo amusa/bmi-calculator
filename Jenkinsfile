@@ -13,9 +13,11 @@
 			stages { 
 				stage('NPM') { 
 					steps { 
-						sh 'ls -a; node --version' 
-						sh 'rm -f build.zip; rm -rf build' 
-						sh 'npm ci --cache .npm' 
+						container('node') {
+							sh 'ls -a; node --version' 
+							sh 'rm -f build.zip; rm -rf build' 
+							sh 'npm ci --cache .npm' 
+						}
 					} 
  				} 
  				stage('Build') { 
