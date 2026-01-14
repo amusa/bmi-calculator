@@ -47,7 +47,7 @@
 					// 	sh 'docker push ayemi/bmi-calc:1.0' 					
 					// } 
 					
-					sh '''
+					sh '''#!/bin/bash
 						# Wait for docker daemon to be ready
 						until docker info >/dev/null 2>&1; do
 							echo "Waiting for Docker daemon..."
