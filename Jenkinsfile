@@ -53,16 +53,16 @@
 							echo "Waiting for Docker daemon..."
 							sleep 2
 						done
-						// docker build -f Dockerfile -t ayemi/bmi-calc:1.0 . && docker images
+						docker build -f Dockerfile -t ayemi/bmi-calc:1.0 . && docker images
 
-						// withDockerRegistry([ credentialsId: "dockerhub-cred", url: "" ]) { 
-						// 	docker push ayemi/bmi-calc:1.0 					
-						//} 
+						withDockerRegistry([ credentialsId: "dockerhub-cred", url: "" ]) { 
+							docker push ayemi/bmi-calc:1.0 					
+						} 
 					'''
-					sh 'docker build -f Dockerfile -t ayemi/bmi-calc:1.0 . && docker images' 
-					withDockerRegistry([ credentialsId: "dockerhub-cred", url: "" ]) { 
-						sh 'docker push ayemi/bmi-calc:1.0' 					
-					} 
+					// sh 'docker build -f Dockerfile -t ayemi/bmi-calc:1.0 . && docker images' 
+					// withDockerRegistry([ credentialsId: "dockerhub-cred", url: "" ]) { 
+					// 	sh 'docker push ayemi/bmi-calc:1.0' 					
+					// } 
 				}
 			} 
 		} 
