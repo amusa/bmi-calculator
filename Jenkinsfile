@@ -40,6 +40,15 @@
  			} 
 			steps { 
 				container('docker'){
+
+					sh '''
+						echo "Current Shell: $0"
+						which bash || echo "bash not found"
+						which docker || echo "docker not found"
+						ls -l /bin/bash /usr/bin/bash || true
+					'''
+
+
 					unstash 'build' 
 					unzip dir: 'build', glob: '', zipFile: 'build.zip' 
 					// sh 'docker build -f Dockerfile -t ayemi/bmi-calc:1.0 . && docker images' 
@@ -47,7 +56,8 @@
 					// 	sh 'docker push ayemi/bmi-calc:1.0' 					
 					// } 
 					
-					sh '''#!/bin/bash
+					
+					sh '''#!/bin/sh
 						# Wait for docker daemon to be ready
 						until docker info >/dev/null 2>&1; do
 							echo "Waiting for Docker daemon..."
