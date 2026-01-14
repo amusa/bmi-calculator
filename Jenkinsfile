@@ -16,7 +16,8 @@
 						container('node') {
 							sh 'ls -a; node --version' 
 							sh 'rm -f build.zip; rm -rf build' 
-							sh 'npm ci --cache .npm' 
+							// sh 'npm ci --cache /tmp/.npm-cache' 
+							sh 'npm install' 
 						}
 					} 
  				} 
