@@ -45,17 +45,12 @@
 						echo "Current Shell: $0"
 						which bash || echo "bash not found"
 						which docker || echo "docker not found"
-						ls -l /bin/bash /usr/bin/bash || true
+						// ls -l /bin/bash /usr/bin/bash || true
 					'''
 
 
 					unstash 'build' 
 					unzip dir: 'build', glob: '', zipFile: 'build.zip' 
-					// sh 'docker build -f Dockerfile -t ayemi/bmi-calc:1.0 . && docker images' 
-					// withDockerRegistry([ credentialsId: "dockerhub-cred", url: "" ]) { 
-					// 	sh 'docker push ayemi/bmi-calc:1.0' 					
-					// } 
-					
 					
 					sh '''#!/bin/sh
 						# Wait for docker daemon to be ready
@@ -73,10 +68,14 @@
 		} 
 		stage('Minikube Deployment'){
 			agent{
-				label 'kubernetes'
+				kubernetes{
+					inheritFrom 'k8s-agent'
+				}
 			}
 			steps{
-				sh 'kubectl apply -f react-deployment.yaml'
+				container('kubectl'){
+					sh 'kubectl apply -f react-deployment.yaml -n bmi-app'
+				}
 			}
 		}
 		
