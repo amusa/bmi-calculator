@@ -68,12 +68,12 @@
 		} 
 		stage('Minikube Deployment'){
 			agent{
-				kubernetes{
-					inheritFrom 'k8s-agent'
-				}
+				label 'k8s-agent'
 			}
+			
 			steps{
 				container('kubectl'){
+					sh 'id && ls -la /home/jenkins/agent'
 					sh 'kubectl apply -f react-deployment.yaml -n bmi-app'
 				}
 			}
